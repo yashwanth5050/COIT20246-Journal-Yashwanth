@@ -6,194 +6,44 @@
 **Week:** 1  
 **Topic:** Computer Systems and Applications
 
-## Activity 1 – GitHub Journal Setup
+## Activity 1 – Inspecting Computer System Information
 
 ### Objective
 
-The first activity was to prepare the GitHub environment that I will use for my journal throughout the unit. I used my GitHub account `yashwanth5050` and prepared a private repository for the weekly journal. I also became familiar with the purpose of commits and Markdown files.
+The purpose of this activity was to inspect the hardware and operating system information of the computer I was using. I used the Windows **System Information** utility to view the main system specifications and understand how the operating system reports information about the computer.
 
 ### Work Completed
 
-I signed in to GitHub using my account at `https://github.com/yashwanth5050`. I created a new private repository for the journal and enabled a README file. I then organised the repository so that individual Markdown files could be used for each week.
+I opened the Windows **System Information** utility and reviewed the **System Summary** section. The screenshot shows that the computer is running **Microsoft Windows 11 Pro** on an **x64-based PC**.
 
-The main repository structure I used was:
+The system uses an **AMD Ryzen 7 5800X 8-Core Processor**. The System Information window also shows that the processor has **8 cores and 16 logical processors**. The computer has **32.0 GB of installed physical memory (RAM)**.
 
-```text
-COIT20246-Journal-Yashwanth/
-├── README.md
-├── Week01.md
-├── Week02.md
-├── Week03.md
-└── images/
-```
-
-I used a private repository because the journal is an individual assessment. I also checked the repository settings so that the required tutor can be added as a collaborator.
+The System Summary also displays other operating system and hardware information, including the Windows build, BIOS information, system manufacturer and model fields, secure boot state, Windows directory, system directory, boot device and virtual memory information.
 
 ### Evidence
 
-![Figure 1.1 – My COIT20246 private GitHub journal repository](images/week01-github-repository.png)
+![Figure 1.1 – Windows System Information showing the computer hardware and operating system details](images/week01-systeminfo.png)
 
-**Figure 1.1 explanation:** This screenshot shows my GitHub account and the private repository created for the COIT20246 journal. It demonstrates that I am maintaining the journal through GitHub rather than as a standalone Word document.
-
-![Figure 1.2 – Repository files and Markdown structure](images/week01-repository-files.png)
-
-**Figure 1.2 explanation:** This screenshot shows the repository file structure, including `README.md`, `Week01.md`, `Week02.md`, `Week03.md` and the `images` folder.
-
-### What I Learned
-
-I learned that GitHub is not only a place for source code but can also be used to maintain a chronological technical journal. Commits create a history of changes, which is useful for showing that the journal has been updated regularly. I also learned that a private repository allows controlled access to the journal while preventing it from being openly shared.
-
-## Activity 2 – Basic Markdown Formatting
-
-### Objective
-
-The purpose of this activity was to learn how to format a journal using Markdown. I practised headings, bold text, lists, code blocks, links and images.
-
-### Markdown Used
-
-```markdown
-# Main Heading
-
-## Section Heading
-
-**Bold text**
-
-- Item 1
-- Item 2
-
-`inline command`
-
-```text
-Command output can be placed here.
-```
-
-[GitHub](https://github.com)
-
-![Screenshot caption](images/example.png)
-```
-
-### Result
-
-I created the Week 1 journal as a `.md` file and used headings to divide the work into activities. I used fenced code blocks for commands and output because this makes technical evidence much easier to read. I also learned that images stored inside the repository can be displayed directly in a Markdown document by using a relative path.
-
-### Evidence
-
-![Figure 1.3 – Week01.md rendered using Markdown on GitHub](images/week01-markdown-rendered.png)
-
-**Figure 1.3 explanation:** This screenshot shows the rendered `Week01.md` page on GitHub. It demonstrates that headings, code blocks and image links are being interpreted correctly as Markdown.
-
-### What I Learned
-
-The main difference between plain text and Markdown is that Markdown provides structure without requiring a word processor. I found it simple because the source remains readable even before GitHub renders it. This will also make the later journal entries consistent.
-
-## Activity 3 – Inspecting the Windows Computer System with PowerShell
-
-### Objective
-
-The next activity was to inspect basic information about the computer system using Windows PowerShell. The aim was to connect the theoretical topic of computer systems with the hardware and operating system actually being used.
-
-### Commands Used
-
-I opened Windows PowerShell and first checked the computer name:
-
-```powershell
-hostname
-```
-
-Example output:
-
-```text
-YASHWANTH-PC
-```
-
-I then used the following command to display Windows system information:
-
-```powershell
-systeminfo
-```
-
-The command displayed information including the operating system, system manufacturer, system model, processor details, memory and network-related information.
-
-I also checked processor information using:
-
-```powershell
-Get-CimInstance Win32_Processor | Select-Object Name, NumberOfCores, NumberOfLogicalProcessors
-```
-
-I checked physical memory using:
-
-```powershell
-Get-CimInstance Win32_ComputerSystem | Select-Object TotalPhysicalMemory
-```
-
-Finally, I checked the Windows version using:
-
-```powershell
-Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsArchitecture
-```
-
-### Evidence
-
-![Figure 1.4 – PowerShell system information output](images/week01-systeminfo.png)
-
-**Figure 1.4 explanation:** This screenshot shows the `systeminfo` command running in PowerShell and displays information about my Windows operating system and computer.
-
-![Figure 1.5 – Processor and operating system information](images/week01-processor-os.png)
-
-**Figure 1.5 explanation:** This screenshot shows PowerShell commands used to inspect processor and Windows details.
+**Figure 1.1 explanation:** The screenshot shows the Windows **System Information** window with the **System Summary** selected. It provides evidence of the operating system, processor architecture, processor details, installed RAM and other system configuration information on the computer used for this activity.
 
 ### Interpretation
 
-The activity showed me that an operating system provides tools for obtaining information about the underlying hardware. PowerShell commands can retrieve system information directly, which is more efficient than opening several graphical settings pages.
+From the System Information window, I could see how Windows combines hardware and operating system information in one place. The computer is an x64-based system and is running Windows 11 Pro. The processor information shows the difference between physical processor cores and logical processors. In this system, the AMD Ryzen 7 5800X is shown with 8 cores and 16 logical processors.
 
-I also understood the distinction between physical processor cores and logical processors. Logical processors are the processing units exposed to the operating system, while physical cores refer to the actual hardware cores on the CPU.
+The installed physical memory is shown as 32.0 GB. This helped me understand that the operating system can report both the total installed memory and the amount of memory currently available for use.
 
-## Activity 4 – Processes and Applications
-
-### Objective
-
-The aim was to see how applications running on the computer are represented as processes.
-
-### Commands Used
-
-I listed running processes using:
-
-```powershell
-Get-Process
-```
-
-To view processes using the most CPU time, I used:
-
-```powershell
-Get-Process | Sort-Object CPU -Descending | Select-Object -First 10
-```
-
-To inspect memory usage, I used:
-
-```powershell
-Get-Process | Sort-Object WorkingSet -Descending | Select-Object -First 10 Name, Id, WorkingSet
-```
-
-### Evidence
-
-![Figure 1.6 – Running processes displayed in PowerShell](images/week01-processes.png)
-
-**Figure 1.6 explanation:** The screenshot shows a list of processes running on my computer. The information includes process names and identifiers.
-
-### Interpretation
-
-I learned that an application may be represented by one or more processes and that the operating system is responsible for allocating processor time and memory to these processes. The process identifier is useful because it gives the operating system a unique way to refer to each running process.
+The activity also showed me that System Information can be useful when checking a computer before installing software, troubleshooting compatibility problems, or documenting the specifications of a system.
 
 ## Problems and Troubleshooting
 
-The main issue I encountered was that PowerShell produced a large amount of output for commands such as `systeminfo` and `Get-Process`. I solved this by filtering the output with `Select-Object` and sorting it with `Sort-Object`. This produced smaller results that were easier to interpret and capture as evidence.
+I did not encounter a major technical problem during this activity. The main task was to locate the important information within the large System Summary. I focused on the operating system name, system type, processor and installed physical memory because these values provide a useful overview of the computer.
 
-I also checked my Markdown image paths carefully. Relative paths must match the exact filename stored in the repository. If the filename or folder name is incorrect, GitHub displays a broken image instead of the screenshot.
+I also made sure that the screenshot clearly displayed the System Summary so that the evidence could be linked directly to the information discussed in this journal entry.
 
 ## Weekly Reflection
 
-Week 1 gave me a clearer understanding of both the assessment workflow and the computer system I am using. Setting up GitHub first was useful because I can now document later activities immediately rather than reconstructing them at the end of the term.
+This activity helped me become more familiar with the information Windows provides about a computer system. I learned how to identify the operating system, processor architecture, processor cores, logical processors and installed physical memory from the System Information utility.
 
-The PowerShell activities helped me connect basic computer architecture concepts with a real operating system. Instead of thinking of the processor, memory and applications as separate theoretical topics, I could see how Windows reports and manages these resources. I also became more comfortable using command-line tools and filtering their output.
+The most useful part of the activity was seeing the relationship between the physical hardware and the information presented by the operating system. Before completing the activity, I understood terms such as processor cores and RAM mainly as specifications. Viewing them directly in System Information made the concepts easier to relate to a real computer.
 
-The most useful skill from this week was learning how to document technical work in Markdown. I can now combine commands, explanations and screenshots in one structured journal entry.
+I also learned that collecting system information is an important first step in technical support and troubleshooting because it gives a clear overview of the environment before changes are made.
