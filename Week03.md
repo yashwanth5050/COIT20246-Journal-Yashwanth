@@ -6,224 +6,188 @@
 **Week:** 3  
 **Topic:** Network Technologies
 
-## Activity 1 – Identifying Network Interface Information
+## Activity 1 – Viewing and Modifying the ARP Cache
 
 ### Objective
 
-The first Week 3 activity was to inspect the network interface more closely and identify information associated with the link layer.
+The purpose of this activity was to examine the ARP cache on a Windows system and observe the relationship between IPv4 addresses and physical MAC addresses. I also observed how a dynamic ARP entry can be removed.
 
 ### Commands Used
 
-I used the following command:
-
-```powershell
-getmac /v
-```
-
-I also used:
-
-```powershell
-Get-NetAdapter | Select-Object Name, InterfaceDescription, MacAddress, LinkSpeed, Status
-```
-
-### Observations
-
-The output included the MAC address of each adapter. I learned that an IP address and a MAC address serve different purposes. The IP address is used for logical network addressing and routing, while the MAC address identifies an interface at the local network/link layer.
-
-The `LinkSpeed` field also showed the negotiated link speed reported by Windows. I understood that the advertised or negotiated link speed does not guarantee that every application will achieve that exact throughput because actual performance is affected by overhead, congestion, wireless conditions and other factors.
-
-### Evidence
-
-![Figure 3.1 – Network adapter MAC address and link information](images/week03-adapter-details.png)
-
-**Figure 3.1 explanation:** This screenshot shows the MAC address, status and link speed of my network adapter.
-
-## Activity 2 – Examining Ethernet and IP Information in Wireshark
-
-### Objective
-
-The aim of this activity was to examine a captured packet and distinguish between link-layer and network-layer addressing.
-
-### Procedure
-
-I started Wireshark on the active network interface and generated traffic using:
-
-```powershell
-ping 8.8.8.8
-```
-
-I applied the display filter:
-
-```text
-icmp
-```
-
-I selected an Echo Request packet and expanded the protocol information.
-
-I examined:
-
-```text
-Frame
-Ethernet II
-Internet Protocol Version 4
-Internet Control Message Protocol
-```
-
-### Observations
-
-The Ethernet section contained source and destination MAC addresses. The IPv4 section contained source and destination IP addresses.
-
-This showed me that a single packet can be described at several layers. The Ethernet frame is concerned with delivery over the current local link, while the IP packet is used for logical delivery across networks.
-
-### Evidence
-
-![Figure 3.2 – Ethernet and IPv4 details in Wireshark](images/week03-ethernet-ip.png)
-
-**Figure 3.2 explanation:** This screenshot shows the Ethernet and IPv4 sections of a captured packet and demonstrates the difference between MAC and IP addressing.
-
-## Activity 3 – Viewing the ARP Cache
-
-### Objective
-
-The purpose of this activity was to examine the relationship between IPv4 addresses and MAC addresses on the local network.
-
-### Commands Used
-
-I displayed the ARP cache using:
+The PowerShell screenshot shows the following command used to display the ARP cache:
 
 ```powershell
 arp -a
 ```
 
-I also used PowerShell:
+The initial output shows the interface:
+
+```text
+Interface: 192.168.1.246 --- 0x3
+```
+
+It also shows several Internet Address and Physical Address mappings, including:
+
+```text
+192.168.1.1     bc-76-c5-1d-19-56     dynamic
+192.168.1.245   f8-ac-65-86-fb-28     dynamic
+224.0.0.22      01-00-5e-00-00-16     static
+239.255.255.250 01-00-5e-7f-ff-fa     static
+```
+
+The screenshot then shows the following command:
 
 ```powershell
-Get-NetNeighbor
+arp -d 192.168.1.245
 ```
+
+After deleting that entry, `arp -a` was run again. The entry for `192.168.1.245` was no longer present.
+
+### Evidence
+
+![Figure 3.1 – ARP cache before and after deleting a dynamic ARP entry](images/week03-arp-cache.png)
+
+**Figure 3.1 explanation:** This screenshot shows the ARP cache for interface `192.168.1.246`. It includes dynamic and static address mappings. The command `arp -d 192.168.1.245` removes the dynamic entry for `192.168.1.245`, and the second `arp -a` output confirms that the entry is no longer listed.
 
 ### Interpretation
 
-The output contained local IP addresses associated with physical addresses. I learned that ARP is used on IPv4 local networks to determine the MAC address associated with an IPv4 address.
+The activity demonstrated that the ARP cache stores mappings between IPv4 addresses and MAC addresses. The dynamic entries are learned automatically, while the static multicast-related entries remain listed.
 
-This is necessary because software may know the destination IP address, but Ethernet communication on the local network still needs an appropriate link-layer destination address.
+Deleting `192.168.1.245` from the ARP cache showed that individual dynamic mappings can be removed manually. This helped me understand that ARP information is maintained locally by the operating system and can change as devices communicate on the network.
 
-### Evidence
-
-![Figure 3.3 – ARP cache displayed in Windows](images/week03-arp-cache.png)
-
-**Figure 3.3 explanation:** This screenshot shows IPv4 neighbour entries and their corresponding physical addresses.
-
-## Activity 4 – Observing ARP Traffic in Wireshark
+## Activity 2 – Creating and Interpreting a Client–Server Network Diagram
 
 ### Objective
 
-The aim was to observe ARP directly in a packet capture.
+The purpose of this activity was to represent a basic client–server architecture visually and understand how multiple clients communicate with a server and database through the Internet.
 
-### Procedure
+### Diagram Description
 
-I opened Wireshark and started a capture. I applied this display filter:
+The uploaded network diagram contains three clients:
 
 ```text
-arp
+Client1
+Client2
+Client3
 ```
 
-I generated normal local network traffic and observed available ARP packets.
+Each client communicates through the Internet using a request/response relationship. The Internet then forwards the request to a server.
 
-Where necessary, I displayed the current ARP information using:
+The server communicates with a database using:
 
-```powershell
-arp -a
+```text
+query/update
 ```
 
-### Observations
+and the database returns:
 
-ARP request messages are used to ask which device owns a particular IPv4 address, while ARP replies provide the associated MAC address.
+```text
+data
+```
 
-This activity helped me understand why ARP is important in an Ethernet-based IPv4 LAN. IP provides logical addressing, but ARP provides the information required to deliver a frame to a local device.
+The server then sends a response back through the Internet to the clients.
 
 ### Evidence
 
-![Figure 3.4 – ARP packets captured in Wireshark](images/week03-wireshark-arp.png)
+![Figure 3.2 – Client–server architecture showing clients, Internet, server and database](images/week03-network-diagram.png)
 
-**Figure 3.4 explanation:** This screenshot shows ARP traffic captured on the local network and illustrates the exchange used to associate IPv4 addresses with MAC addresses.
-
-## Activity 5 – Creating a Basic Network Diagram
-
-### Objective
-
-The purpose of this activity was to represent a small network visually using diagrams.net/draw.io.
-
-### Diagram
-
-I created a simple network containing an end-user computer, a switch, a wireless access point/router and an Internet connection.
-
-```text
-+------------------+
-| Yashwanth's PC   |
-+--------+---------+
-         |
-         | Ethernet / Wi-Fi
-         |
-+--------+---------+
-| Local LAN Device |
-| Router / AP      |
-+--------+---------+
-         |
-         | WAN
-         |
-+--------+---------+
-|    Internet      |
-+------------------+
-```
-
-In diagrams.net, I represented the devices as separate nodes and connected them with lines. I labelled the local network and WAN portions so that the path was clear.
-
-### Evidence
-
-![Figure 3.5 – Basic network topology created in diagrams.net](images/week03-network-diagram.png)
-
-**Figure 3.5 explanation:** This diagram represents my understanding of a basic local network and how a host reaches the Internet through a local network device.
+**Figure 3.2 explanation:** This diagram shows three clients communicating through the Internet with a server. The server forwards queries or updates to a database, receives data back, and returns responses to the clients.
 
 ### Interpretation
 
-The diagram helped me distinguish between an end device and networking infrastructure. A host generates or receives application data, while switches, access points and routers provide connectivity. The router is especially important because it provides a path between the local network and other IP networks.
+The diagram helped me understand the separation of responsibilities in a client–server system. The clients initiate requests, while the server processes those requests and communicates with the database when information needs to be retrieved or updated.
 
-## Activity 6 – Comparing Common Network Technologies
+The database is not shown communicating directly with the clients. Instead, the server acts as the intermediate component. This makes the flow of communication easier to understand because client requests are handled by the server before data is accessed.
 
-### Ethernet
+## Activity 3 – Examining DNS and Application Traffic in Wireshark
 
-Ethernet is commonly used for wired local area networking. It provides link-layer communication and uses MAC addresses within the local network. A wired Ethernet connection is normally stable and is not affected by radio interference in the same way as Wi-Fi.
+### Objective
 
-### Wi-Fi
+The purpose of this activity was to inspect captured network traffic in Wireshark and identify how DNS traffic appears alongside TCP and HTTP communication.
 
-Wi-Fi provides local network communication using radio rather than a physical Ethernet cable. It gives users mobility and simplifies connections for laptops and mobile devices. However, the quality of a wireless connection can depend on distance, obstacles, interference and the capabilities of the access point and client device.
+### Work Completed
 
-### Router
+The Wireshark screenshot shows a packet capture named:
 
-A router forwards packets between different IP networks. In a typical home or small-office environment, the router connects the private local network to an upstream Internet service.
+```text
+tv-netflix-problems-2011-07-06.pcap
+```
 
-### Switch
+The visible packets include TCP, HTTP and DNS traffic.
 
-A switch connects devices within an Ethernet LAN and forwards Ethernet frames based on link-layer information. This differs from a router, which is primarily responsible for forwarding packets between IP networks.
+One DNS request is shown from:
+
+```text
+Source:      192.168.0.21
+Destination: 192.168.0.1
+Protocol:    DNS
+```
+
+The request information includes:
+
+```text
+Standard query 0x2188 A cdn-0.nflximg.com
+```
+
+The following DNS response is shown from:
+
+```text
+Source:      192.168.0.1
+Destination: 192.168.0.21
+Protocol:    DNS
+```
+
+The response information includes a CNAME relationship involving:
+
+```text
+cdn-0.nflximg.com
+images.netflix.com
+```
+
+The selected DNS response packet also shows:
+
+```text
+User Datagram Protocol
+Src Port: 53
+Dst Port: 34036
+```
+
+and the DNS details indicate:
+
+```text
+Flags: 0x8180 Standard query response, No error
+Questions: 1
+Answer RRs: 4
+Authority RRs: 9
+Additional RRs: 9
+```
 
 ### Evidence
 
-![Figure 3.6 – Completed Week 3 network technology notes](images/week03-network-notes.png)
+![Figure 3.3 – Wireshark capture showing DNS, TCP and HTTP traffic](images/week03-wireshark-arp.png)
 
-**Figure 3.6 explanation:** This screenshot shows my Week 3 Markdown entry containing the comparison of Ethernet, Wi-Fi, switching and routing concepts.
+**Figure 3.3 explanation:** This screenshot shows a Wireshark packet capture containing DNS, TCP and HTTP traffic. The selected DNS response is sent from `192.168.0.1` to `192.168.0.21` and contains a successful response for `cdn-0.nflximg.com`.
+
+### Interpretation
+
+This activity showed me how DNS operates as part of normal application communication. Before a client can access content using a hostname, the hostname may need to be resolved to network addressing information.
+
+The packet capture also shows that DNS traffic appears alongside TCP and HTTP packets. This helped me understand that accessing an Internet-based service can involve several protocols working together rather than a single protocol operating in isolation.
+
+The selected DNS packet uses UDP source port 53, which made it easier to identify it as DNS traffic. The response also reports “No error,” showing that the DNS query was answered successfully.
 
 ## Problems and Troubleshooting
 
-The main difficulty in Week 3 was separating the purpose of MAC addresses from the purpose of IP addresses. Looking at one packet in Wireshark helped resolve this because both types of address were visible at the same time but in different protocol sections.
+The main challenge was interpreting different types of information from the screenshots. The ARP cache output uses IPv4-to-MAC mappings, while the Wireshark capture contains DNS, TCP and HTTP traffic. I separated the activities according to what was actually visible in each screenshot rather than treating them as the same networking process.
 
-Another issue was that ARP captures are not always continuously visible because ARP mappings can already exist in the operating system cache. I therefore checked the existing neighbour table with `arp -a` and observed ARP traffic when it appeared during normal local network activity.
+I also noticed that the Wireshark screenshot filename suggests ARP, but the visible packet content is DNS, TCP and HTTP traffic. I therefore based the journal entry on the actual packet contents shown in Wireshark.
 
 ## Weekly Reflection
 
-Week 3 improved my understanding of network technologies by showing how several layers work together. I previously understood an IP address mainly as the address of a computer on a network. The practical work showed me that local Ethernet communication also depends on MAC addresses and that ARP provides a connection between IPv4 addressing and link-layer delivery.
+Week 3 improved my understanding of several network technologies by showing them through different forms of evidence. The ARP activity demonstrated how a Windows computer stores mappings between IPv4 addresses and physical addresses and how a dynamic ARP entry can be removed.
 
-Wireshark was particularly useful because it allowed me to expand the Ethernet, IPv4 and ICMP sections of a real captured packet. This made the layered design of networking easier to understand than reading about each protocol independently.
+The client–server diagram helped me understand how requests move from clients through the Internet to a server and how the server interacts with a database before returning a response. This made the logical flow of a networked application easier to visualise.
 
-Creating a network diagram also helped me organise the concepts visually. I can now more clearly explain the roles of an end device, switch, wireless access point and router.
+The Wireshark activity showed a different part of networking by demonstrating DNS, TCP and HTTP traffic in the same capture. I learned that accessing an Internet service can involve name resolution and application communication working together.
 
-Across the first three weeks, my approach has changed from simply running commands to interpreting what each command or packet tells me about the system. I expect this will be useful in later topics because network troubleshooting and cyber security both depend on understanding normal system and network behaviour first.
+Overall, Week 3 helped me connect address resolution, client–server architecture and packet analysis. These activities made it clearer that network communication depends on several technologies operating at different stages of the communication process.
